@@ -1,0 +1,5 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "true"
+{% for t_role in rolespec %}
+- src: {{ t_role.src }}
+  {{ "name: " ~ t_role.name if t_role.name is defined }}
+{% endfor %}

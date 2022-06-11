@@ -1,0 +1,36 @@
+- block:
+    - name: Discover any role requirements
+      ansible.builtin.find:
+        patterns:
+          - roledep.yml
+        paths:
+          - "{{ playbook_dir }}/roles"
+        recurse: true
+        depth: 2
+      register: t_roledeps
+
+    - name: Install all role requirements
+      command:
+        cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
+      vars:
+        requirements_path: "{{ item.path }}"
+        role_dest_path: "{{ playbook_dir }}/roles"
+      register: t_galaxy_install
+      loop: "{{ t_roledeps.files }}"
+
+    - name: Grab a new list of dependencies
+      ansible.builtin.find:
+        patterns:
+          - roledep.yml
+        paths:
+          - "{{ playbook_dir }}/roles"
+        recurse: true
+        depth: 2
+      register: t_roledeps_new
+
+    - name: Call this tasks file again if we have more roledeps
+      ansible.builtin.include_tasks:
+        file: roledeps.yml
+      when: ( t_roledeps.matched != t_roledeps_new.matched ) |bool
+
+  delegate_to: localhost

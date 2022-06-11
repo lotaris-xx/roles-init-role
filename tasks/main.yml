@@ -1,0 +1,44 @@
+---
+# tasks file for initroles
+
+- block:
+    - name: We are in init-roles
+      ansible.builtin.debug:
+        msg: We are in init-roles
+
+    - name: Create temp requirements.yml file
+      ansible.builtin.tempfile:
+        state: file
+        suffix: .yml
+      register: t_reqfile
+
+    - name: Template out the temporary requirements file
+      template:
+        src: reqfile.j2
+        dest: "{{ t_reqfile.path }}"
+
+    - name: Pull in a role
+      command:
+        cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
+      vars:
+        requirements_path: "{{ t_reqfile.path }}"
+        role_dest_path: "{{ playbook_dir }}/roles"
+      register: t_galaxy_install
+
+    - name: What did we install where?
+      debug:
+        var: t_galaxy_install
+        verbosity: 1
+
+    - name: Remove the temp requirements file
+      ansible.builtin.file:
+        path: "{{ t_reqfile.path }}"
+        state: absent
+      when: t_reqfile.path is defined
+
+    - name: Check for new role dependencies
+      ansible.builtin.include_tasks:
+        file: roledeps.yml
+
+  delegate_to: localhost
+
