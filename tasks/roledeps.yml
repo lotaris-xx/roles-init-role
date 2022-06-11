@@ -10,7 +10,7 @@
       register: t_roledeps
 
     - name: Install all role requirements
-      command:
+      ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
       vars:
         requirements_path: "{{ item.path }}"

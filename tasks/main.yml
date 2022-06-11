@@ -13,12 +13,12 @@
       register: t_reqfile
 
     - name: Template out the temporary requirements file
-      template:
+      ansible.builtin.template:
         src: reqfile.j2
         dest: "{{ t_reqfile.path }}"
 
     - name: Pull in a role
-      command:
+      ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
       vars:
         requirements_path: "{{ t_reqfile.path }}"
@@ -26,7 +26,7 @@
       register: t_galaxy_install
 
     - name: What did we install where?
-      debug:
+      ansible.builtin.debug:
         var: t_galaxy_install
         verbosity: 1
 
