@@ -9,7 +9,7 @@
         depth: 2
       register: t_roledeps
 
-    - name: Install all role requirements
+    - name: Install all role requirements with SSH key from environment
       ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
       vars:
@@ -19,6 +19,19 @@
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no -i $GIT_SSH_KEY_FILE'
       register: t_galaxy_install
       loop: "{{ t_roledeps.files }}"
+      when: lookup('env', 'GIT_SSH_KEY_FILE')
+
+    - name: Install all role requirements with no ssh key or key from ssh-add
+      ansible.builtin.command:
+        cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
+      vars:
+        requirements_path: "{{ item.path }}"
+        role_dest_path: "{{ playbook_dir }}/roles"
+      environment:
+        GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no -i $GIT_SSH_KEY_FILE'
+      register: t_galaxy_install
+      loop: "{{ t_roledeps.files }}"
+      when: not lookup('env', 'GIT_SSH_KEY_FILE')
 
     - name: Grab a new list of dependencies
       ansible.builtin.find:
