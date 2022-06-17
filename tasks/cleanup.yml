@@ -1,0 +1,5 @@
+- name: Remove the temp requirements file
+  ansible.builtin.file:
+    path: "{{ t_reqfile.path }}"
+    state: absent
+  when: t_reqfile.path is defined

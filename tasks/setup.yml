@@ -1,0 +1,14 @@
+
+# If we handed a rolespec structure then
+# build out a temp requirements.yml file
+    - name: Create temp requirements.yml file
+      ansible.builtin.tempfile:
+        state: file
+        suffix: .yml
+      register: t_reqfile
+
+    - name: Template out the temporary requirements file
+      ansible.builtin.template:
+        src: reqfile.j2
+        dest: "{{ t_reqfile.path }}"
+

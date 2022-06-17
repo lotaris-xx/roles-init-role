@@ -1,0 +1,18 @@
+---
+# tasks file for initroles
+
+- block:
+    - name: Pull in a role
+      ansible.builtin.command:
+        cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
+      vars:
+        requirements_path: "{{ t_reqfile.path }}"
+        role_dest_path: "{{ playbook_dir }}/roles"
+      register: t_galaxy_install
+
+    - name: What did we install where?
+      ansible.builtin.debug:
+        var: t_galaxy_install
+        verbosity: 1
+
+  delegate_to: localhost
