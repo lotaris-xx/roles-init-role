@@ -9,6 +9,8 @@
         t_role_path: "{{ 'rolepaths/' ~ role_to_run |default(omit) ~ '.yml' }}"
         requirements_path: "{{ t_reqfile.path | default(t_role_path) }}"
         role_dest_path: "{{ playbook_dir }}/roles"
+      environment:
+        GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no '
       register: t_galaxy_install
 
     - name: What did we install where?
