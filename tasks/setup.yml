@@ -2,7 +2,7 @@
 # build out a temp requirements.yml file
 - name: Only continue if we weren't passed information we need
   assert:
-    that: (rolespec.src is defined) or (role_to_run is defined)
+    that: (rolespec is defined) or (role_to_run is defined)
     quiet: true
     fail_msg: One of rolespec or role_to_run must be defined
     success_msg: We are good to move forward
@@ -19,4 +19,4 @@
         src: reqfile.j2
         dest: "{{ t_reqfile.path }}"
 
-  when: rolespec.src is defined
+  when: rolespec is defined
