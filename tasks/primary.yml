@@ -2,7 +2,7 @@
 # tasks file for initroles
 
 - block:
-    - name: Pull in a role
+    - name: Pull in a role (with ssh key passed via env)
       ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
       vars:
@@ -11,6 +11,17 @@
         role_dest_path: "{{ playbook_dir }}/roles"
       environment:
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no -i $GIT_SSH_KEY_FILE'
+      when: lookup('env', 'GIT_SSH_KEY_FILE')
+      register: t_galaxy_install
+
+    - name: Pull in a role (with key on keyring or no keys needed)
+      ansible.builtin.command:
+        cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
+      vars:
+        t_role_path: "{{ 'rolepaths/' ~ role_to_run |default(omit) ~ '.yml' }}"
+        requirements_path: "{{ t_reqfile.path | default(t_role_path) }}"
+        role_dest_path: "{{ playbook_dir }}/roles"
+      when: not lookup('env', 'GIT_SSH_KEY_FILE')
       register: t_galaxy_install
 
     - name: What did we install where?
