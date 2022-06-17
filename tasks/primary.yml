@@ -2,6 +2,10 @@
 # tasks file for initroles
 
 - block:
+    - name: Contents of key
+      debug:
+        msg: SSH Private Key {{ lookup("env", "GIT_SSH_KEY_FILE") }}
+
     - name: Pull in a role
       ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
