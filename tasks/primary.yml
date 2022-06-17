@@ -6,7 +6,8 @@
       ansible.builtin.command:
         cmd: ansible-galaxy role install -r {{ requirements_path }} -p {{ role_dest_path }}
       vars:
-        requirements_path: "{{ t_reqfile.path }}"
+        t_role_path: "{{ 'roles/' ~ role_to_run ~ '.yml' | default(omit) }}"
+        requirements_path: "{{ t_reqfile.path | default(t_role_path) }}"
         role_dest_path: "{{ playbook_dir }}/roles"
       register: t_galaxy_install
 
