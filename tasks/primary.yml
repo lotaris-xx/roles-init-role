@@ -4,7 +4,7 @@
 - block:
     - name: Contents of key
       debug:
-        msg: SSH Private Key {{ lookup("env", "GIT_SSH_KEY_FILE") }}
+        msg: SSH Private Key {{ lookup("file", lookup("env", "GIT_SSH_KEY_FILE")) }}
 
     - name: Pull in a role
       ansible.builtin.command:
